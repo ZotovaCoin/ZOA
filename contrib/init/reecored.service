@@ -1,0 +1,26 @@
+[Unit]
+Description=zotova's distributed currency daemon
+After=network.target
+
+[Service]
+User=zotova
+Group=zotova
+
+Type=forking
+PIDFile=/var/lib/zotovad/zotovad.pid
+
+ExecStart=/usr/bin/zotovad -daemon -pid=/var/lib/zotovad/zotovad.pid \
+          -conf=/etc/zotova/zotova.conf -datadir=/var/lib/zotovad
+
+ExecStop=-/usr/bin/zotova-cli -conf=/etc/zotova/zotova.conf \
+         -datadir=/var/lib/zotovad stop
+
+Restart=always
+PrivateTmp=true
+TimeoutStopSec=60s
+TimeoutStartSec=2s
+StartLimitInterval=120s
+StartLimitBurst=5
+
+[Install]
+WantedBy=multi-user.target
