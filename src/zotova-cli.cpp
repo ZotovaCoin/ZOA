@@ -105,7 +105,11 @@ UniValue CallRPC(const string& strMethod, const UniValue& params)
     // Connect to localhost
     bool fUseSSL = GetBoolArg("-rpcssl", false);
     asio::io_service io_service;
+#if BOOST_VERSION >= 106000
+    ssl::context context(ssl::context::sslv23);
+#else
     ssl::context context(io_service, ssl::context::sslv23);
+#endif
     context.set_options(ssl::context::no_sslv2 | ssl::context::no_sslv3);
     asio::ssl::stream<asio::ip::tcp::socket> sslStream(io_service, context);
     SSLIOStreamDevice<asio::ip::tcp> d(sslStream, fUseSSL);
@@ -121,8 +125,8 @@ UniValue CallRPC(const string& strMethod, const UniValue& params)
         // Try fall back to cookie-based authentication if no password is provided
         if (!GetAuthCookie(&strRPCUserColonPass)) {
             throw runtime_error(strprintf(
-                _("You must set rpcpassword=<password> in the configuration file:\n%s\n"
-                  "If the file does not exist, create it with owner-readable-only file permissions."),
+                    _("You must set rpcpassword=<password> in the configuration file:\n%s\n"
+                      "If the file does not exist, create it with owner-readable-only file permissions."),
                     GetConfigFile().string().c_str()));
 
         }

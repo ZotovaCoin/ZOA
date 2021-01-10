@@ -53,32 +53,38 @@ static void convertSeed6(std::vector<CAddress>& vSeedsOut, const SeedSpec6* data
 //    timestamp before)
 // + Contains no strange transactions
 static Checkpoints::MapCheckpoints mapCheckpoints =
-    boost::assign::map_list_of
-    (     0, uint256("0x07eba3d2e2893b614674a63b1df2f6d7681827951e20b00194799389e89f4e84"));
+        boost::assign::map_list_of
+                (     0, uint256("0x07eba3d2e2893b614674a63b1df2f6d7681827951e20b00194799389e89f4e84"))
+                (     50000, uint256("069b4fae77a4b5aeb702f1afa0c495b30d7325fb0993cfb13b1eb0a3e36f98f2"))
+                (     100000, uint256("0xb73b530b567daab9e76c560de2cd9e7e5b9fae5502c3c394a090e6109c4cbd56"))
+                (     200000, uint256("0x364acb3a1211fefafbbcbbb7a3b588e56046350ee1edf4bebcc8db7c075c3447"))
+                (     400000, uint256("0x1bb9ff356976f0e335c2cf8c11a2abe9b86c43822c1baa68245196db3a7eaf4b"))
+                (     484040, uint256("0x669aec3e472d347e4eec37c7fd675e79f56910a4308f415ca2a321f370249e32"))
+                (     485710, uint256("0x970e7530fe4faf60ceca282622cab605221dff193ded3b7dd5b3991cdef52165"));
 
 static const Checkpoints::CCheckpointData data = {
-    &mapCheckpoints,
-    1579764816, // * UNIX timestamp of last checkpoint block
-    0,     // * total number of transactions between genesis and last checkpoint(the tx=... number in the SetBestChain debug.log lines)
-    2000        // * estimated number of transactions per day after checkpoint
+        &mapCheckpoints,
+        1610046975, // * UNIX timestamp of last checkpoint block
+        995023,     // * total number of transactions between genesis and last checkpoint(the tx=... number in the SetBestChain debug.log lines)
+        2000        // * estimated number of transactions per day after checkpoint
 };
 
 static Checkpoints::MapCheckpoints mapCheckpointsTestnet =
-    boost::assign::map_list_of(0, uint256("0x001"));
+        boost::assign::map_list_of(0, uint256("0x001"));
 
 static const Checkpoints::CCheckpointData dataTestnet = {
-    &mapCheckpointsTestnet,
-    1740710,
-    0,
-    250};
+        &mapCheckpointsTestnet,
+        1740710,
+        0,
+        250};
 
 static Checkpoints::MapCheckpoints mapCheckpointsRegtest =
-    boost::assign::map_list_of(0, uint256("0x001"));
+        boost::assign::map_list_of(0, uint256("0x001"));
 static const Checkpoints::CCheckpointData dataRegtest = {
-    &mapCheckpointsRegtest,
-    1454124731,
-    0,
-    100};
+        &mapCheckpointsRegtest,
+        1454124731,
+        0,
+        100};
 
 class CMainParams : public CChainParams
 {
@@ -100,11 +106,13 @@ public:
         nRejectBlockOutdatedMajority = 950;
         nToCheckBlockUpgradeMajority = 1000;
         nMinerThreads = 0;
-        nTargetTimespan = 1 * 60;
-        nTargetSpacing = 1 * 10;
+        nTargetTimespan = 10 * 30;
+        nTargetSpacing = 1 * 30;
         nMaturity = 5;
-        nMasternodeCountDrift = 20;
+        nMasternodeCountDrift = 10;
         nMaxMoneyOut = 100000000 * COIN;
+        nStakeInputMinimal = 555 * COIN;
+
 
         /** Height or Time Based Activations **/
         nLastPOWBlock = 500;
@@ -152,7 +160,7 @@ public:
         strMasternodePoolDummyAddress = "SsJVWUkt6HtSCY2SaJ2akeyJUg8bg1hW3S";
         nStartMasternodePayments = genesis.nTime + (10);
 
-        nBudget_Fee_Confirmations = 6;
+        nBudget_Fee_Confirmations = 3;
 
         strTreasuryAddress = "";
     }
@@ -184,8 +192,8 @@ public:
         nRejectBlockOutdatedMajority = 75;
         nToCheckBlockUpgradeMajority = 100;
         nMinerThreads = 0;
-        nTargetTimespan = 1 * 60; // 
-        nTargetSpacing = 2 * 60;  // 
+        nTargetTimespan = 1 * 60; //
+        nTargetSpacing = 2 * 60;  //
         nLastPOWBlock = 200;
         nMaturity = 15;
         nMasternodeCountDrift = 4;
@@ -229,7 +237,7 @@ public:
         strMasternodePoolDummyAddress = "SbJ4Qad4xc77PpLzMx6rUegAs6aUPWkcUq";
         nStartMasternodePayments = genesis.nTime + 86400; // 24 hours after genesis
         nBudget_Fee_Confirmations = 3; // Number of confirmations for the finalization fee. We have to make this very short
-                                       // here because we only have a 8 block finalization window on testnet
+        // here because we only have a 8 block finalization window on testnet
     }
     const Checkpoints::CCheckpointData& Checkpoints() const
     {
@@ -259,7 +267,7 @@ public:
         nToCheckBlockUpgradeMajority = 1000;
         nMinerThreads = 1;
         nTargetTimespan = 24 * 60 * 60; //
-        nTargetSpacing = 2 * 60;        // 
+        nTargetSpacing = 2 * 60;        //
         bnProofOfWorkLimit = ~uint256(0) >> 1;
         genesis.nTime = 1525777781;
         genesis.nBits = 0x1e0ffff0;
@@ -342,17 +350,17 @@ const CChainParams& Params()
 CChainParams& Params(CBaseChainParams::Network network)
 {
     switch (network) {
-    case CBaseChainParams::MAIN:
-        return mainParams;
-    case CBaseChainParams::TESTNET:
-        return testNetParams;
-    case CBaseChainParams::REGTEST:
-        return regTestParams;
-    case CBaseChainParams::UNITTEST:
-        return unitTestParams;
-    default:
-        assert(false && "Unimplemented network");
-        return mainParams;
+        case CBaseChainParams::MAIN:
+            return mainParams;
+        case CBaseChainParams::TESTNET:
+            return testNetParams;
+        case CBaseChainParams::REGTEST:
+            return regTestParams;
+        case CBaseChainParams::UNITTEST:
+            return unitTestParams;
+        default:
+            assert(false && "Unimplemented network");
+            return mainParams;
     }
 }
 
